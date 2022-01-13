@@ -1,0 +1,118 @@
+---
+title: "dplyr: Error in select - unused arguments"
+subtitle: "Series: What Can Go Wrong in R"
+author: "StatistikinDD"
+date: "Presentation Created: `r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    chakra: libs/remark-latest.min.js
+    lib_dir: libs
+    css: ["xaringan-themer.css", "libs/_css/my_css.css"]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "%current%"
+      ratio: 16:9
+---
+
+```{r setup, include = FALSE}
+
+options(htmltools.dir.version = FALSE)
+# knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, comment = "")
+knitr::opts_chunk$set(echo = FALSE, comment = "")
+xaringanthemer::style_mono_accent(title_slide_background_color = "#EDF4FB",
+                                  title_slide_text_color = "#000000",
+                                  base_font_size = "18px")
+Sys.setenv(LANG = "en")
+```
+
+# dplyr's select: A Simple Use Case
+
+```{r dplyr1, echo = TRUE, eval = FALSE}
+library(dplyr)
+
+mtcars %>% 
+  select(hp, wt, am) %>%  #<<
+  head()
+```
+
+```{r dplyr1b, message = FALSE, warning = FALSE}
+library(dplyr)
+
+mtcars %>% 
+  select(hp, wt, am) %>% 
+  head() %>% 
+  knitr::kable()
+
+```
+
+---
+
+# dplyr: Things Suddenly Go Wrong
+
+```{r Boston, echo = TRUE, message = FALSE, warning = FALSE}
+
+library(MASS)
+head(Boston, n = 2) #<<
+```
+
+```{r dplyr-error1, echo = TRUE, eval = FALSE}
+mtcars %>% 
+  select(hp, wt, am) %>% #<<
+  head()
+```
+
+.red[Error in select(., hp, wt, am) : unused arguments (hp, wt, am)]
+
+---
+
+# So <u>WHAT</u> Went Wrong?
+
+Let's load the MASS package again ... and display the startup message this time.
+
+```{r, echo = TRUE, message = TRUE}
+detach(package:MASS, unload = TRUE)
+library(MASS)
+```
+
+**A `select()` function is defined in the `MASS` package as well as in `dplyr`.**
+
+---
+
+# So What Can We Do?
+
+* If we don't take any precautions:
+  + the **order in which we load packages** is decisive!
+  + the package **loaded last** takes precedence
+
+* Load **all** packages at the start of your script, in the right order  
+  *here: load `MASS` <u>before</u> `dplyr` (or `tidyverse`)*
+
+* Better: Be more explicit about which package should take precedence
+  + ***double colon notation***: `dplyr::select()`  
+  *This may become tedious when we use many `dplyr` functions in our script.*
+  + use `conflicted` package at the top of your script
+  
+```{r, echo = TRUE}
+library(conflicted)
+conflict_prefer("select", "dplyr")
+```
+
+---
+
+class: center, middle
+
+# Thanks!
+
+### Youtube: StatistikinDD
+
+### Twitter: @StatistikinDD
+
+### github: fjodor
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](https://yihui.org/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
+
+Thanks to **Yihui Xie** for *{knitr}* and *{xaringan}* and **Garrick Aden-Buie** for *{xaringanthemer}*.
