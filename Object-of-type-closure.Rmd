@@ -63,10 +63,16 @@ head[mtcars, n = 2] #<<
 .pull-right[
 ## Solved!
 
-```{r, echo = TRUE, results = "hold"}
+```{r, echo = TRUE, eval = FALSE}
 mean(x) #<<
 summary(x) #<<
 head(mtcars, n = 2) #<<
+```
+
+```{r, results = "hold"}
+mean(x)
+print(summary(x))
+print(head(mtcars, n = 2))
 ```
 
 ]
@@ -96,9 +102,6 @@ my_df[1, 1:3] #<<
 
 .pull-right[
 ## Solved!
-
-* Use `data[]` instead of `df[]`
-* What is special about `df`?
 
 ```{r, echo = TRUE, results = "hold"}
 class(df)
@@ -148,7 +151,7 @@ typeof(f)
 .pull-left[
 ```{r assign, echo = TRUE, eval = FALSE}
 a
-a <- f()
+a <- f()  #<<
 a
 ```
 ]

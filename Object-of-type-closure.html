@@ -83,20 +83,20 @@ Error in head[mtcars, n = 2]: object of type 'closure' is not subsettable
 *head(mtcars, n = 2)
 ```
 
+
 ```
 [1] 3
+   Min. 1st Qu.  Median    Mean 3rd Qu. 
+      1       2       3       3       4 
+   Max. 
+      5 
+              mpg cyl disp  hp drat    wt
+Mazda RX4      21   6  160 110  3.9 2.620
+Mazda RX4 Wag  21   6  160 110  3.9 2.875
+               qsec vs am gear carb
+Mazda RX4     16.46  0  1    4    4
+Mazda RX4 Wag 17.02  0  1    4    4
 ```
-
-
-
-| Min.| 1st Qu.| Median| Mean| 3rd Qu.| Max.|
-|----:|-------:|------:|----:|-------:|----:|
-|    1|       2|      3|    3|       4|    5|
-
-|              | mpg| cyl| disp|  hp| drat|    wt|  qsec| vs| am| gear| carb|
-|:-------------|---:|---:|----:|---:|----:|-----:|-----:|--:|--:|----:|----:|
-|Mazda RX4     |  21|   6|  160| 110|  3.9| 2.620| 16.46|  0|  1|    4|    4|
-|Mazda RX4 Wag |  21|   6|  160| 110|  3.9| 2.875| 17.02|  0|  1|    4|    4|
 
 ]
 
@@ -144,9 +144,6 @@ Error in eval(expr, envir, enclos): object 'my_df' not found
 
 .pull-right[
 ## Solved!
-
-* Use `data[]` instead of `df[]`
-* What is special about `df`?
 
 
 ```r
@@ -394,7 +391,7 @@ typeof(f)
 
 ```r
 a
-a &lt;- f()
+*a &lt;- f()
 a
 ```
 ]
