@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Object of Type Closure is Not Subsettable</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="StatistikinDD" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="libs/_css/my_css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Object of Type Closure is Not Subsettable
+## Series: What Can Go Wrong in R
+### StatistikinDD
+### Presentation Created: 2022-01-13
+
+---
+
+
+
+
+# Object of Type Closure is not Subsettable
+
+.Large[.red[Error in ... : object of type 'closure' is not subsettable]]
+
+--
+
+## How Can This Error Arise?
+
+### 1. Accidentally using .Large[`**[]**`] instead of .Large[`**()**`]
+### 2. Accidentally accessing a non-existing object that happens to be a function
+
+--
+
+## And What is a `'closure'`?
+
+---
+
+# 1. Accidentally using .Large[`**[]**`] instead of .Large[`**()**`]
+
+.pull-left[
+## Producing the Error
+
+
+```r
+x &lt;- 1:5
+*mean[x]
+```
+
+```
+Error in mean[x]: object of type 'closure' is not subsettable
+```
+
+```r
+*summary[x]
+```
+
+```
+Error in summary[x]: object of type 'closure' is not subsettable
+```
+
+```r
+*head[mtcars, n = 2]
+```
+
+```
+Error in head[mtcars, n = 2]: object of type 'closure' is not subsettable
+```
+]
+
+--
+
+.pull-right[
+## Solved!
+
+
+```r
+*mean(x)
+*summary(x)
+*head(mtcars, n = 2)
+```
+
+```
+[1] 3
+```
+
+
+
+| Min.| 1st Qu.| Median| Mean| 3rd Qu.| Max.|
+|----:|-------:|------:|----:|-------:|----:|
+|    1|       2|      3|    3|       4|    5|
+
+|              | mpg| cyl| disp|  hp| drat|    wt|  qsec| vs| am| gear| carb|
+|:-------------|---:|---:|----:|---:|----:|-----:|-----:|--:|--:|----:|----:|
+|Mazda RX4     |  21|   6|  160| 110|  3.9| 2.620| 16.46|  0|  1|    4|    4|
+|Mazda RX4 Wag |  21|   6|  160| 110|  3.9| 2.875| 17.02|  0|  1|    4|    4|
+
+]
+
+---
+
+# 2. Accidentally Accessing a Non-Existing Object
+
+.pull-left[
+## Producing the Error
+
+
+```r
+data &lt;- mtcars
+data[1, 1:3]
+```
+
+
+
+|          | mpg| cyl| disp|
+|:---------|---:|---:|----:|
+|Mazda RX4 |  21|   6|  160|
+
+```r
+*df[1, 1:3]
+```
+
+```
+Error in df[1, 1:3]: object of type 'closure' is not subsettable
+```
+
+#### For Comparison:
+
+
+```r
+*my_df[1, 1:3]
+```
+
+```
+Error in eval(expr, envir, enclos): object 'my_df' not found
+```
+
+]
+
+--
+
+.pull-right[
+## Solved!
+
+* Use `data[]` instead of `df[]`
+* What is special about `df`?
+
+
+```r
+class(df)
+typeof(df)
+*?df
+```
+
+```
+[1] "function"
+[1] "closure"
+```
+
+&lt;div class="r-help-page"&gt;&lt;div class="container"&gt;
+
+&lt;table width="100%" summary="page for FDist"&gt;&lt;tr&gt;&lt;td&gt;FDist&lt;/td&gt;&lt;td style="text-align: right;"&gt;R Documentation&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;h2&gt;The F Distribution&lt;/h2&gt;
+
+&lt;h3&gt;Description&lt;/h3&gt;
+
+&lt;p&gt;Density, distribution function, quantile function and random
+generation for the F distribution with &lt;code&gt;df1&lt;/code&gt; and &lt;code&gt;df2&lt;/code&gt;
+degrees of freedom (and optional non-centrality parameter &lt;code&gt;ncp&lt;/code&gt;).
+&lt;/p&gt;
+
+
+&lt;h3&gt;Usage&lt;/h3&gt;
+
+&lt;pre class="r"&gt;
+df(x, df1, df2, ncp, log = FALSE)
+pf(q, df1, df2, ncp, lower.tail = TRUE, log.p = FALSE)
+qf(p, df1, df2, ncp, lower.tail = TRUE, log.p = FALSE)
+rf(n, df1, df2, ncp)
+&lt;/pre&gt;
+
+
+&lt;h3&gt;Arguments&lt;/h3&gt;
+
+&lt;table summary="R argblock"&gt;
+&lt;tr valign="top"&gt;&lt;td&gt;&lt;code&gt;x, q&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p&gt;vector of quantiles.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr valign="top"&gt;&lt;td&gt;&lt;code&gt;p&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p&gt;vector of probabilities.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr valign="top"&gt;&lt;td&gt;&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p&gt;number of observations. If &lt;code&gt;length(n) &amp;gt; 1&lt;/code&gt;, the length
+is taken to be the number required.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr valign="top"&gt;&lt;td&gt;&lt;code&gt;df1, df2&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p&gt;degrees of freedom.  &lt;code&gt;Inf&lt;/code&gt; is allowed.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr valign="top"&gt;&lt;td&gt;&lt;code&gt;ncp&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p&gt;non-centrality parameter. If omitted the central F is assumed.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr valign="top"&gt;&lt;td&gt;&lt;code&gt;log, log.p&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p&gt;logical; if TRUE, probabilities p are given as log(p).&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr valign="top"&gt;&lt;td&gt;&lt;code&gt;lower.tail&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;
+&lt;p&gt;logical; if TRUE (default), probabilities are
+&lt;i&gt;P[X &amp;le; x]&lt;/i&gt;, otherwise, &lt;i&gt;P[X &amp;gt; x]&lt;/i&gt;.&lt;/p&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+
+&lt;h3&gt;Details&lt;/h3&gt;
+
+&lt;p&gt;The F distribution with &lt;code&gt;df1 =&lt;/code&gt; &lt;i&gt;n1&lt;/i&gt; and &lt;code&gt;df2 =&lt;/code&gt;
+&lt;i&gt;n2&lt;/i&gt; degrees of freedom has density
+&lt;/p&gt;
+&lt;p style="text-align: center;"&gt;&lt;i&gt;f(x) = &amp;Gamma;((n1 + n2)/2) / (&amp;Gamma;(n1/2) &amp;Gamma;(n2/2))
+    (n1/n2)^(n1/2) x^(n1/2 - 1)
+    (1 + (n1/n2) x)^-(n1 + n2)/2&lt;/i&gt;&lt;/p&gt;
+
+&lt;p&gt;for &lt;i&gt;x &amp;gt; 0&lt;/i&gt;.
+&lt;/p&gt;
+&lt;p&gt;It is the distribution of the ratio of the mean squares of
+&lt;i&gt;n1&lt;/i&gt; and &lt;i&gt;n2&lt;/i&gt; independent standard normals, and hence
+of the ratio of two independent chi-squared variates each divided by its
+degrees of freedom.  Since the ratio of a normal and the root
+mean-square of &lt;i&gt;m&lt;/i&gt; independent normals has a Student's &lt;i&gt;t_m&lt;/i&gt;
+distribution, the square of a &lt;i&gt;t_m&lt;/i&gt; variate has a F distribution on
+1 and &lt;i&gt;m&lt;/i&gt; degrees of freedom.
+&lt;/p&gt;
+&lt;p&gt;The non-central F distribution is again the ratio of mean squares of
+independent normals of unit variance, but those in the numerator are
+allowed to have non-zero means and &lt;code&gt;ncp&lt;/code&gt; is the sum of squares of
+the means.  See Chisquare for further details on
+non-central distributions.
+&lt;/p&gt;
+
+
+&lt;h3&gt;Value&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;df&lt;/code&gt; gives the density,
+&lt;code&gt;pf&lt;/code&gt; gives the distribution function
+&lt;code&gt;qf&lt;/code&gt; gives the quantile function, and
+&lt;code&gt;rf&lt;/code&gt; generates random deviates.
+&lt;/p&gt;
+&lt;p&gt;Invalid arguments will result in return value &lt;code&gt;NaN&lt;/code&gt;, with a warning.
+&lt;/p&gt;
+&lt;p&gt;The length of the result is determined by &lt;code&gt;n&lt;/code&gt; for
+&lt;code&gt;rf&lt;/code&gt;, and is the maximum of the lengths of the
+numerical arguments for the other functions.
+&lt;/p&gt;
+&lt;p&gt;The numerical arguments other than &lt;code&gt;n&lt;/code&gt; are recycled to the
+length of the result.  Only the first elements of the logical
+arguments are used.
+&lt;/p&gt;
+
+
+&lt;h3&gt;Note&lt;/h3&gt;
+
+&lt;p&gt;Supplying &lt;code&gt;ncp = 0&lt;/code&gt; uses the algorithm for the non-central
+distribution, which is not the same algorithm used if &lt;code&gt;ncp&lt;/code&gt; is
+omitted.  This is to give consistent behaviour in extreme cases with
+values of &lt;code&gt;ncp&lt;/code&gt; very near zero.
+&lt;/p&gt;
+&lt;p&gt;The code for non-zero &lt;code&gt;ncp&lt;/code&gt; is principally intended to be used
+for moderate values of &lt;code&gt;ncp&lt;/code&gt;: it will not be highly accurate,
+especially in the tails, for large values.
+&lt;/p&gt;
+
+
+&lt;h3&gt;Source&lt;/h3&gt;
+
+&lt;p&gt;For the central case of &lt;code&gt;df&lt;/code&gt;, computed &lt;em&gt;via&lt;/em&gt; a binomial
+probability, code contributed by Catherine Loader (see
+&lt;code&gt;dbinom&lt;/code&gt;); for the non-central case computed &lt;em&gt;via&lt;/em&gt;
+&lt;code&gt;dbeta&lt;/code&gt;, code contributed by Peter Ruckdeschel.
+&lt;/p&gt;
+&lt;p&gt;For &lt;code&gt;pf&lt;/code&gt;, &lt;em&gt;via&lt;/em&gt; &lt;code&gt;pbeta&lt;/code&gt; (or for large
+&lt;code&gt;df2&lt;/code&gt;, &lt;em&gt;via&lt;/em&gt; &lt;code&gt;pchisq&lt;/code&gt;).
+&lt;/p&gt;
+&lt;p&gt;For &lt;code&gt;qf&lt;/code&gt;, &lt;em&gt;via&lt;/em&gt; &lt;code&gt;qchisq&lt;/code&gt; for large &lt;code&gt;df2&lt;/code&gt;,
+else &lt;em&gt;via&lt;/em&gt; &lt;code&gt;qbeta&lt;/code&gt;.
+&lt;/p&gt;
+
+
+&lt;h3&gt;References&lt;/h3&gt;
+
+&lt;p&gt;Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988)
+&lt;em&gt;The New S Language&lt;/em&gt;.
+Wadsworth &amp;amp; Brooks/Cole.
+&lt;/p&gt;
+&lt;p&gt;Johnson, N. L., Kotz, S. and Balakrishnan, N. (1995)
+&lt;em&gt;Continuous Univariate Distributions&lt;/em&gt;, volume 2, chapters 27 and 30.
+Wiley, New York.
+&lt;/p&gt;
+
+
+&lt;h3&gt;See Also&lt;/h3&gt;
+
+&lt;p&gt;Distributions for other standard distributions, including
+&lt;code&gt;dchisq&lt;/code&gt; for chi-squared and &lt;code&gt;dt&lt;/code&gt; for Student's
+t distributions.
+&lt;/p&gt;
+
+
+&lt;h3&gt;Examples&lt;/h3&gt;
+
+&lt;pre class="r"&gt;
+## Equivalence of pt(.,nu) with pf(.^2, 1,nu):
+x &amp;lt;- seq(0.001, 5, length.out = 100)
+nu &amp;lt;- 4
+stopifnot(all.equal(2*pt(x,nu) - 1, pf(x^2, 1,nu)),
+          ## upper tails:
+       all.equal(2*pt(x,     nu, lower.tail=FALSE),
+              pf(x^2, 1,nu, lower.tail=FALSE)))
+
+## the density of the square of a t_m is 2*dt(x, m)/(2*x)
+# check this is the same as the density of F_{1,m}
+all.equal(df(x^2, 1, 5), dt(x, 5)/x)
+
+## Identity:  qf(2*p - 1, 1, df) == qt(p, df)^2  for  p &amp;gt;= 1/2
+p &amp;lt;- seq(1/2, .99, length.out = 50); df &amp;lt;- 10
+rel.err &amp;lt;- function(x, y) ifelse(x == y, 0, abs(x-y)/mean(abs(c(x,y))))
+quantile(rel.err(qf(2*p - 1, df1 = 1, df2 = df), qt(p, df)^2), .90)  # ~= 7e-9
+&lt;/pre&gt;
+
+
+&lt;/div&gt;&lt;/div&gt;
+
+]
+
+---
+
+# All Right - So What is a `'Closure'`, Anyway?
+
+.pull-left[
+## Consider This Code ...
+
+```r
+a &lt;- 3
+
+f &lt;- function() {
+  a &lt;- a + 1
+}
+
+a
+f()
+a
+```
+
+]
+
+--
+
+.pull-right[
+## Let's Run the Code ...
+
+```
+[1] 3
+```
+
+```
+[1] 3
+```
+
+
+```r
+class(f)
+typeof(f)
+```
+
+```
+[1] "function"
+[1] "closure"
+```
+]
+
+### Functions "enclose" their environment
+
+--
+
+.pull-left[
+
+```r
+a
+a &lt;- f()
+a
+```
+]
+
+--
+
+.pull-right[
+
+```
+[1] 3
+[1] 4
+```
+
+]
+
+---
+
+class: center, middle
+
+# Thanks!
+
+### Youtube: StatistikinDD
+
+### Twitter: @StatistikinDD
+
+### github: fjodor
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](https://yihui.org/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
+
+Thanks to **Yihui Xie** for *{knitr}* and *{xaringan}* and **Garrick Aden-Buie** for *{xaringanthemer}*.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"slideNumberFormat": "%current%",
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

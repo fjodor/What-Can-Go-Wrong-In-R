@@ -2,6 +2,14 @@
 
 /* Neu */
 
+.large {
+  font-size: 120%;
+}
+
+.Large {
+  font-size: 144%;
+}
+
 /* colors = c(
   white = "#FFFFFF",
   orange = "#ff8811",
@@ -56,7 +64,7 @@ a, a > code {
 /* Two-column layout */
 
 .left-column {
-  color: #777;
+  /* color: #777; */
   width: 20%;
   height: 92%;
   float: left;
@@ -133,7 +141,7 @@ th, td { padding: 5px; }
 https://www.garrickadenbuie.com/blog/better-progressive-xaringan/
 */
 
-.highlight-last-item > ul > li, 
+.highlight-last-item > ul > li,
 .highlight-last-item > ol > li {
   opacity: 0.5;
 }

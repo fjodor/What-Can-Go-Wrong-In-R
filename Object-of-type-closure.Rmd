@@ -24,9 +24,143 @@ xaringanthemer::style_mono_accent(title_slide_background_color = "#EDF4FB",
                                   title_slide_text_color = "#000000",
                                   base_font_size = "18px")
 Sys.setenv(LANG = "en")
+options(width = 45)
+library(printr)
 ```
 
 # Object of Type Closure is not Subsettable
+
+.Large[.red[Error in ... : object of type 'closure' is not subsettable]]
+
+--
+
+## How Can This Error Arise?
+
+### 1. Accidentally using .Large[`**[]**`] instead of .Large[`**()**`]
+### 2. Accidentally accessing a non-existing object that happens to be a function
+
+--
+
+## And What is a `'closure'`?
+
+---
+
+# 1. Accidentally using .Large[`**[]**`] instead of .Large[`**()**`]
+
+.pull-left[
+## Producing the Error
+
+```{r, echo = TRUE, error = TRUE}
+x <- 1:5
+mean[x] #<<
+summary[x] #<<
+head[mtcars, n = 2] #<<
+```
+]
+
+--
+
+.pull-right[
+## Solved!
+
+```{r, echo = TRUE, results = "hold"}
+mean(x) #<<
+summary(x) #<<
+head(mtcars, n = 2) #<<
+```
+
+]
+
+---
+
+# 2. Accidentally Accessing a Non-Existing Object
+
+.pull-left[
+## Producing the Error
+
+```{r, echo = TRUE, error = TRUE}
+data <- mtcars
+data[1, 1:3]
+df[1, 1:3]   #<<
+```
+
+#### For Comparison:
+
+```{r, echo = TRUE, error = TRUE}
+my_df[1, 1:3] #<<
+```
+
+]
+
+--
+
+.pull-right[
+## Solved!
+
+* Use `data[]` instead of `df[]`
+* What is special about `df`?
+
+```{r, echo = TRUE, results = "hold"}
+class(df)
+typeof(df)
+?df #<<
+```
+
+]
+
+---
+
+# All Right - So What is a `'Closure'`, Anyway?
+
+.pull-left[
+## Consider This Code ...
+```{r closure, echo = TRUE, eval = FALSE}
+a <- 3
+
+f <- function() {
+  a <- a + 1
+}
+
+a
+f()
+a
+```
+
+]
+
+--
+
+.pull-right[
+## Let's Run the Code ...
+```{r, ref.label = "closure"}
+```
+
+```{r, echo = TRUE, results = "hold"}
+class(f)
+typeof(f)
+```
+]
+
+### Functions "enclose" their environment
+
+--
+
+.pull-left[
+```{r assign, echo = TRUE, eval = FALSE}
+a
+a <- f()
+a
+```
+]
+
+--
+
+.pull-right[
+```{r, ref.label = "assign", results = "hold"}
+```
+
+]
+
 ---
 
 class: center, middle
