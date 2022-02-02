@@ -31,25 +31,101 @@ library(knitr)
 
 # What Can Go Wrong With Factors in R
 
-.pull-left[
 * ### Invalid factor levels
-
-* ### Converting factors to numeric
-]
 
 --
 
-.pull-right[
+* ### Recoding factors wrongly
+
+--
+
+* ### Converting factors to numeric
+
+--
+
 ```{r}
 include_graphics("libs/_Images/invalid-factor-level.png")
 ```
+
+---
+
+# Invalid factor levels
+
+.pull-left[
+```{r}
+f <- factor(letters[1:4])
+f
+
+f[5] <- "e"
+
+```
+]
+
+.pull-right[
+### Better
+
+* define new factor level explicitly OR
+* merge, rbind, c(), dplyr::bind_rows, dplyr::left_join() etc. all deal with this
+
+]
+
+---
+
+# Recoding Factors Wrongly
+
+.pull-left[
+```{r, echo = TRUE}
+winners <- c("Susan", "Michael", "Susan", "Susan", "Susan")
+str(winners)
+winners
+
+winners <- as.factor(winners)
+winners
+```
+
+--
+
+```{r, echo = TRUE}
+levels(winners) <- c("Suze", "Mike")
+winners
+
+```
+]
+
+.pull-right[
+### Better
+
+* Take alphabetic order into account
+* Use explicit recoding, e. g. via dplyr
+
+]
+---
+
+# Converting Factors to Numeric
 
 ```{r, echo = TRUE}
 f <- factor(6:10)
 f
 as.numeric(f) #<<
 ```
-]
+
+--
+
+### Better
+
+```{r}
+f |>
+  as.character() |>  #<<
+  as.numeric()
+
+# Same as
+as.numeric(as.character(f))
+
+# Recommended in R's documentation
+# See ?factor
+as.numeric(levels(f))[f] #<<
+```
+
 
 ---
 
