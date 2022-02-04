@@ -219,39 +219,67 @@ You can use `dplyr::recode()`, but it has an unintuitive order of arguments and 
 ```{r, echo = TRUE}
 f <- factor(6:10)
 f
+
 as.numeric(f) #<<
+
+str(f)
 ```
-
-### A c() Surprise
-
-```{r}
-f <- factor(letters[1:4])
-
-f2 <- c(f, "e") #<<
-f2
-
-```
-
 
 ]
 
 --
 
-### Better
+.pull-right[
+### A c() Surprise
 
-```{r}
+```{r, echo = TRUE}
+f <- factor(letters[1:4]) #<<
+f
+
+c(f, "e") #<<
+
+```
+
+]
+
+---
+
+# Converting Factors to Numeric: How To
+
+.pull-left[
+
+```{r, echo = TRUE}
+f <- factor(6:10)
+f
+
 f |>
   as.character() |>  #<<
   as.numeric()
 
-# Same as
-as.numeric(as.character(f))
+# Same as:
+# as.numeric(as.character(f))
 
 # Recommended in R's documentation
 # See ?factor
 as.numeric(levels(f))[f] #<<
 ```
 
+]
+
+--
+
+.pull-right[
+### Avoiding the c() Surprise
+
+```{r, echo = TRUE}
+f <- factor(letters[1:4]) #<<
+f
+
+c(f, factor("e")) #<<
+
+```
+
+]
 
 ---
 

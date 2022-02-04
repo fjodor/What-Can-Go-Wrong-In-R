@@ -280,45 +280,110 @@ Levels: 6 7 8 9 10
 [1] 1 2 3 4 5
 ```
 
-### A c() Surprise
-
-
-```
-[1] "1" "2" "3" "4" "e"
+```r
+str(f)
 ```
 
+```
+ Factor w/ 5 levels "6","7","8","9",..: 1 2 3 4 5
+```
 
 ]
 
 --
 
-### Better
+.pull-right[
+### A c() Surprise
 
 
-```
-Warning: NAs introduced by coercion
-```
-
-```
-[1] NA NA NA NA
+```r
+*f &lt;- factor(letters[1:4])
+f
 ```
 
 ```
-Warning: NAs introduced by coercion
+[1] a b c d
+Levels: a b c d
+```
+
+```r
+*c(f, "e")
 ```
 
 ```
-[1] NA NA NA NA
+[1] "1" "2" "3" "4" "e"
+```
+
+]
+
+---
+
+# Converting Factors to Numeric: How To
+
+.pull-left[
+
+
+```r
+f &lt;- factor(6:10)
+f
 ```
 
 ```
-Warning: NAs introduced by coercion
+[1] 6  7  8  9  10
+Levels: 6 7 8 9 10
+```
+
+```r
+f |&gt;
+* as.character() |&gt;
+  as.numeric()
 ```
 
 ```
-[1] NA NA NA NA
+[1]  6  7  8  9 10
 ```
 
+```r
+# Same as:
+# as.numeric(as.character(f))
+
+# Recommended in R's documentation
+# See ?factor
+*as.numeric(levels(f))[f]
+```
+
+```
+[1]  6  7  8  9 10
+```
+
+]
+
+--
+
+.pull-right[
+### Avoiding the c() Surprise
+
+
+```r
+*f &lt;- factor(letters[1:4])
+f
+```
+
+```
+[1] a b c d
+Levels: a b c d
+```
+
+```r
+*c(f, factor("e"))
+```
+
+```
+[1] a b c d e
+Levels: a b c d e
+```
+
+]
 
 ---
 
