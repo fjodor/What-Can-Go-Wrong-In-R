@@ -112,7 +112,7 @@ f
 
 ```{r, echo = TRUE}
 f <- factor(letters[1:4])
-c(f, factor("e"))
+c(f, factor("e")) #<<
 
 ```
 
