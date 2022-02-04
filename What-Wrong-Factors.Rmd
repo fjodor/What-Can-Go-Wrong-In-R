@@ -247,7 +247,7 @@ c(f, "e") #<<
 
 ---
 
-# (3) Converting Factors to Numeric: How To
+# (3) Converting Factors to Numeric
 
 .pull-left[
 
