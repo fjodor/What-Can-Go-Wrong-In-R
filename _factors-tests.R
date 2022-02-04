@@ -26,6 +26,17 @@ df12 <- dplyr::bind_rows(df1, df2)
 str(df12)
 # works all fine
 
+df <- data.frame(
+  q1 = factor(c("strongly agree", "strongly agree", "strongly disagree", "disagree", "agree", "disagree"))
+)
+
+df_new <- data.frame(
+  q1 = factor("strongly agreed")
+)
+
+df_total <- df
+df_total[7, ] <- df_new
+
 
 #----------------------------------#
 #### c() on factors: works fine ####

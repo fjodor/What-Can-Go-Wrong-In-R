@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>What Can Go Wrong With Factors in R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="StatistikinDD" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="libs/_css/my_css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# What Can Go Wrong With Factors in R
+## Series: What Can Go Wrong in R
+### StatistikinDD
+### Presentation Created: 2022-02-04
+
+---
+
+
+
+
+# What Can Go Wrong With Factors in R
+
+* ### Invalid factor levels
+
+--
+
+* ### Recoding factors wrongly
+
+--
+
+* ### Converting factors to numeric
+
+--
+
+&lt;img src="libs/_Images/invalid-factor-level.png" width="577" /&gt;
+
+---
+
+# Invalid Factor Levels
+
+.pull-left[
+
+### Single Vector
+
+```r
+f &lt;- factor(letters[1:4])
+f
+```
+
+```
+[1] a b c d
+Levels: a b c d
+```
+
+
+```r
+f[5] &lt;- "e"
+```
+![invalid factor level](libs/_Images/invalid-factor-level.png)
+]
+
+--
+
+.pull-right[
+
+### Data Frame
+
+
+```r
+df &lt;- data.frame(
+  q1 = factor(c("strongly agree", 
+                "agree", "disagree"))
+)
+
+df_new &lt;- data.frame(
+* q1 = factor("strongly agreed")
+)
+
+df_total &lt;- df
+*df_total[4, ] &lt;- df_new
+```
+
+![invalid factor level 2](libs/_Images/invalid-factor-level2.png)
+
+*** It's not a bug - it's a feature ***  
+** R detects wrong spelling in new data **
+
+]
+
+---
+
+# Invalid Factor Levels: Solutions
+
+.pull-left[
+### Single Vector
+
+#### Define New Factor Level
+
+
+```r
+levels(f) &lt;- c(levels(f), "e")
+f[5] &lt;- "e"
+
+f
+```
+
+```
+[1] a b c d e
+Levels: a b c d e
+```
+
+#### Use c()
+
+
+```
+[1] a b c d e
+Levels: a b c d e
+```
+
+]
+
+--
+
+.pull-right[
+### Data Frame: Joining Function
+
+
+```r
+df &lt;- data.frame(
+  q1 = factor(c("a", "b"))
+)
+
+df_new &lt;- data.frame(
+* q1 = factor("c")
+)
+
+*merge(df, df_new, all = TRUE)
+# rbind(df, df_new)
+# dplyr::bind_rows(df, df_new)
+# dplyr::full_join(df, df_new)
+```
+
+```
+  q1
+1  a
+2  b
+3  c
+```
+
+Use **dplyr's** `left_join() / right_join()` &lt;br&gt;if you don't want all results from both datasets.
+
+]
+
+---
+
+# Recoding Factors Wrongly
+
+
+```r
+winners &lt;- c("Susan", "Michael", "Susan", "Susan")
+winners
+```
+
+```
+[1] "Susan"   "Michael" "Susan"   "Susan"  
+```
+
+```r
+winners &lt;- as.factor(winners)
+winners
+```
+
+```
+[1] Susan   Michael Susan   Susan  
+Levels: Michael Susan
+```
+
+### Let's Recode the Player Names ...
+
+
+```r
+*levels(winners) &lt;- c("Suze", "Mike")
+winners
+```
+
+--
+
+
+```
+[1] Mike Suze Mike Mike
+Levels: Suze Mike
+```
+
+---
+
+# Recoding Factors: Do Better
+
+.pull-left[
+### Respect Alphabetic Order&lt;br&gt;of Factor Levels
+
+#### Base R
+
+
+```r
+winners &lt;- c("Susan", "Michael", "Susan", "Susan")
+winners
+```
+
+```
+[1] "Susan"   "Michael" "Susan"   "Susan"  
+```
+
+```r
+winners &lt;- as.factor(winners)
+*levels(winners) &lt;- c("Mike", "Suze")
+winners
+```
+
+```
+[1] Suze Mike Suze Suze
+Levels: Mike Suze
+```
+
+]
+
+.pull-right[
+### Better: Use Explicit Recoding
+
+#### The forcats Package
+
+
+```r
+winners &lt;- factor(c("Susan", "Michael",
+                    "Susan", "Susan"))
+
+*winners &lt;- forcats::fct_recode(
+  winners,
+* Suze = "Susan",
+* Mike = "Michael"
+)
+winners
+```
+
+```
+[1] Suze Mike Suze Suze
+Levels: Mike Suze
+```
+
+You can use `dplyr::recode()`, but it has an unintuitive order of arguments and is no longer recommended.
+]
+ 
+---
+
+# Converting Factors to Numeric
+
+.pull-left[
+
+### The Classical Gotcha
+
+
+```r
+f &lt;- factor(6:10)
+f
+```
+
+```
+[1] 6  7  8  9  10
+Levels: 6 7 8 9 10
+```
+
+```r
+*as.numeric(f)
+```
+
+```
+[1] 1 2 3 4 5
+```
+
+### A c() Surprise
+
+
+```
+[1] "1" "2" "3" "4" "e"
+```
+
+
+]
+
+--
+
+### Better
+
+
+```
+Warning: NAs introduced by coercion
+```
+
+```
+[1] NA NA NA NA
+```
+
+```
+Warning: NAs introduced by coercion
+```
+
+```
+[1] NA NA NA NA
+```
+
+```
+Warning: NAs introduced by coercion
+```
+
+```
+[1] NA NA NA NA
+```
+
+
+---
+
+class: center, middle
+
+# Thanks!
+
+### Youtube: StatistikinDD
+
+### Twitter: @StatistikinDD
+
+### github: fjodor
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+The chakra comes from [remark.js](https://remarkjs.com), [**knitr**](https://yihui.org/knitr), and [R Markdown](https://rmarkdown.rstudio.com).
+
+Thanks to **Yihui Xie** for *{knitr}* and *{xaringan}* and **Garrick Aden-Buie** for *{xaringanthemer}*.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"slideNumberFormat": "%current%",
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

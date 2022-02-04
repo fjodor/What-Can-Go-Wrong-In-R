@@ -25,7 +25,6 @@ xaringanthemer::style_mono_accent(title_slide_background_color = "#EDF4FB",
                                   base_font_size = "18px")
 Sys.setenv(LANG = "en")
 library(knitr)
-# options(width = 45)
 # library(printr)
 ```
 
@@ -49,23 +48,98 @@ include_graphics("libs/_Images/invalid-factor-level.png")
 
 ---
 
-# Invalid factor levels
+# Invalid Factor Levels
 
 .pull-left[
-```{r}
+
+### Single Vector
+```{r, echo = TRUE}
 f <- factor(letters[1:4])
 f
-
-f[5] <- "e"
-
 ```
+
+```{r, echo = TRUE, eval = FALSE}
+f[5] <- "e"
+```
+![invalid factor level](libs/_Images/invalid-factor-level.png)
 ]
 
-.pull-right[
-### Better
+--
 
-* define new factor level explicitly OR
-* merge, rbind, c(), dplyr::bind_rows, dplyr::left_join() etc. all deal with this
+.pull-right[
+
+### Data Frame
+
+```{r, echo = TRUE, eval = FALSE}
+df <- data.frame(
+  q1 = factor(c("strongly agree", 
+                "agree", "disagree"))
+)
+
+df_new <- data.frame(
+  q1 = factor("strongly agreed") #<<
+)
+
+df_total <- df
+df_total[4, ] <- df_new #<<
+
+```
+
+![invalid factor level 2](libs/_Images/invalid-factor-level2.png)
+
+*** It's not a bug - it's a feature ***  
+** R detects wrong spelling in new data **
+
+]
+
+---
+
+# Invalid Factor Levels: Solutions
+
+.pull-left[
+### Single Vector
+
+#### Define New Factor Level
+
+```{r, echo = TRUE}
+levels(f) <- c(levels(f), "e")
+f[5] <- "e"
+
+f
+```
+
+#### Use c()
+
+```{r}
+f <- factor(letters[1:4])
+c(f, factor("e"))
+
+```
+
+]
+
+--
+
+.pull-right[
+### Data Frame: Joining Function
+
+```{r, echo = TRUE, results = "hold"}
+
+df <- data.frame(
+  q1 = factor(c("a", "b"))
+)
+
+df_new <- data.frame(
+  q1 = factor("c") #<<
+)
+
+merge(df, df_new, all = TRUE) #<<
+# rbind(df, df_new)
+# dplyr::bind_rows(df, df_new)
+# dplyr::full_join(df, df_new)
+```
+
+Use **dplyr's** `left_join() / right_join()` <br>if you don't want all results from both datasets.
 
 ]
 
@@ -73,41 +147,93 @@ f[5] <- "e"
 
 # Recoding Factors Wrongly
 
-.pull-left[
 ```{r, echo = TRUE}
-winners <- c("Susan", "Michael", "Susan", "Susan", "Susan")
-str(winners)
+winners <- c("Susan", "Michael", "Susan", "Susan")
 winners
 
 winners <- as.factor(winners)
 winners
 ```
 
+### Let's Recode the Player Names ...
+
+```{r recode, echo = TRUE, eval = FALSE}
+levels(winners) <- c("Suze", "Mike") #<<
+winners
+```
+
 --
 
+```{r, ref.label = "recode"}
+```
+
+---
+
+# Recoding Factors: Do Better
+
+.pull-left[
+### Respect Alphabetic Order<br>of Factor Levels
+
+#### Base R
+
 ```{r, echo = TRUE}
-levels(winners) <- c("Suze", "Mike")
+winners <- c("Susan", "Michael", "Susan", "Susan")
 winners
 
+winners <- as.factor(winners)
+levels(winners) <- c("Mike", "Suze") #<<
+winners
 ```
+
 ]
 
 .pull-right[
-### Better
+### Better: Use Explicit Recoding
 
-* Take alphabetic order into account
-* Use explicit recoding, e. g. via dplyr
+#### The forcats Package
 
+```{r, echo = TRUE}
+winners <- factor(c("Susan", "Michael",
+                    "Susan", "Susan"))
+
+winners <- forcats::fct_recode( #<<
+  winners,
+  Suze = "Susan", #<<
+  Mike = "Michael" #<<
+)
+winners
+
+```
+
+You can use `dplyr::recode()`, but it has an unintuitive order of arguments and is no longer recommended.
 ]
+ 
 ---
 
 # Converting Factors to Numeric
+
+.pull-left[
+
+### The Classical Gotcha
 
 ```{r, echo = TRUE}
 f <- factor(6:10)
 f
 as.numeric(f) #<<
 ```
+
+### A c() Surprise
+
+```{r}
+f <- factor(letters[1:4])
+
+f2 <- c(f, "e") #<<
+f2
+
+```
+
+
+]
 
 --
 
