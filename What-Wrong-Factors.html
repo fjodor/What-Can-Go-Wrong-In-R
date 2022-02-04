@@ -24,15 +24,15 @@ class: center, middle, inverse, title-slide
 
 # What Can Go Wrong With Factors in R
 
-* ### Invalid factor levels
+* ### (1) Invalid factor levels
 
 --
 
-* ### Recoding factors wrongly
+* ### (2) Recoding factors wrongly
 
 --
 
-* ### Converting factors to numeric
+* ### (3) Converting factors to numeric
 
 --
 
@@ -40,7 +40,7 @@ class: center, middle, inverse, title-slide
 
 ---
 
-# Invalid Factor Levels
+# (1) Invalid Factor Levels
 
 .pull-left[
 
@@ -93,7 +93,7 @@ df_total &lt;- df
 
 ---
 
-# Invalid Factor Levels: Solutions
+# (1) Invalid Factor Levels: Solutions
 
 .pull-left[
 ### Single Vector
@@ -102,7 +102,7 @@ df_total &lt;- df
 
 
 ```r
-levels(f) &lt;- c(levels(f), "e")
+*levels(f) &lt;- c(levels(f), "e")
 f[5] &lt;- "e"
 
 f
@@ -115,6 +115,11 @@ Levels: a b c d e
 
 #### Use c()
 
+
+```r
+f &lt;- factor(letters[1:4])
+c(f, factor("e"))
+```
 
 ```
 [1] a b c d e
@@ -138,9 +143,9 @@ df_new &lt;- data.frame(
 * q1 = factor("c")
 )
 
-*merge(df, df_new, all = TRUE)
-# rbind(df, df_new)
+*rbind(df, df_new)
 # dplyr::bind_rows(df, df_new)
+# merge(df, df_new, all = TRUE)
 # dplyr::full_join(df, df_new)
 ```
 
@@ -157,7 +162,7 @@ Use **dplyr's** `left_join() / right_join()` &lt;br&gt;if you don't want all res
 
 ---
 
-# Recoding Factors Wrongly
+# (2) Recoding Factors Wrongly
 
 
 ```r
@@ -197,10 +202,10 @@ Levels: Suze Mike
 
 ---
 
-# Recoding Factors: Do Better
+# (2) Recoding Factors: Do Better
 
 .pull-left[
-### Respect Alphabetic Order&lt;br&gt;of Factor Levels
+### Respect Alphabetical Order&lt;br&gt;of Factor Levels
 
 #### Base R
 
@@ -226,6 +231,8 @@ Levels: Mike Suze
 ```
 
 ]
+
+--
 
 .pull-right[
 ### Better: Use Explicit Recoding
@@ -255,7 +262,7 @@ You can use `dplyr::recode()`, but it has an unintuitive order of arguments and 
  
 ---
 
-# Converting Factors to Numeric
+# (3) Converting Factors to Numeric
 
 .pull-left[
 
@@ -313,19 +320,21 @@ Levels: a b c d
 ```
 [1] "1" "2" "3" "4" "e"
 ```
+#### tidyverse: See `vctrs::vec_c()` and friends
 
 ]
 
 ---
 
-# Converting Factors to Numeric: How To
+# (3) Converting Factors to Numeric: How To
 
 .pull-left[
 
+### The Classical Gotcha
+
 
 ```r
-f &lt;- factor(6:10)
-f
+(f &lt;- factor(6:10))
 ```
 
 ```
@@ -344,8 +353,7 @@ f |&gt;
 ```
 
 ```r
-# Same as:
-# as.numeric(as.character(f))
+# Same as: as.numeric(as.character(f))
 
 # Recommended in R's documentation
 # See ?factor

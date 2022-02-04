@@ -30,15 +30,15 @@ library(knitr)
 
 # What Can Go Wrong With Factors in R
 
-* ### Invalid factor levels
+* ### (1) Invalid factor levels
 
 --
 
-* ### Recoding factors wrongly
+* ### (2) Recoding factors wrongly
 
 --
 
-* ### Converting factors to numeric
+* ### (3) Converting factors to numeric
 
 --
 
@@ -48,7 +48,7 @@ include_graphics("libs/_Images/invalid-factor-level.png")
 
 ---
 
-# Invalid Factor Levels
+# (1) Invalid Factor Levels
 
 .pull-left[
 
@@ -94,7 +94,7 @@ df_total[4, ] <- df_new #<<
 
 ---
 
-# Invalid Factor Levels: Solutions
+# (1) Invalid Factor Levels: Solutions
 
 .pull-left[
 ### Single Vector
@@ -102,7 +102,7 @@ df_total[4, ] <- df_new #<<
 #### Define New Factor Level
 
 ```{r, echo = TRUE}
-levels(f) <- c(levels(f), "e")
+levels(f) <- c(levels(f), "e") #<<
 f[5] <- "e"
 
 f
@@ -110,7 +110,7 @@ f
 
 #### Use c()
 
-```{r}
+```{r, echo = TRUE}
 f <- factor(letters[1:4])
 c(f, factor("e"))
 
@@ -133,9 +133,9 @@ df_new <- data.frame(
   q1 = factor("c") #<<
 )
 
-merge(df, df_new, all = TRUE) #<<
-# rbind(df, df_new)
+rbind(df, df_new) #<<
 # dplyr::bind_rows(df, df_new)
+# merge(df, df_new, all = TRUE)
 # dplyr::full_join(df, df_new)
 ```
 
@@ -145,7 +145,7 @@ Use **dplyr's** `left_join() / right_join()` <br>if you don't want all results f
 
 ---
 
-# Recoding Factors Wrongly
+# (2) Recoding Factors Wrongly
 
 ```{r, echo = TRUE}
 winners <- c("Susan", "Michael", "Susan", "Susan")
@@ -169,10 +169,10 @@ winners
 
 ---
 
-# Recoding Factors: Do Better
+# (2) Recoding Factors: Do Better
 
 .pull-left[
-### Respect Alphabetic Order<br>of Factor Levels
+### Respect Alphabetical Order<br>of Factor Levels
 
 #### Base R
 
@@ -186,6 +186,8 @@ winners
 ```
 
 ]
+
+--
 
 .pull-right[
 ### Better: Use Explicit Recoding
@@ -210,7 +212,7 @@ You can use `dplyr::recode()`, but it has an unintuitive order of arguments and 
  
 ---
 
-# Converting Factors to Numeric
+# (3) Converting Factors to Numeric
 
 .pull-left[
 
@@ -239,25 +241,26 @@ f
 c(f, "e") #<<
 
 ```
+#### tidyverse: See `vctrs::vec_c()` and friends
 
 ]
 
 ---
 
-# Converting Factors to Numeric: How To
+# (3) Converting Factors to Numeric: How To
 
 .pull-left[
 
+### The Classical Gotcha
+
 ```{r, echo = TRUE}
-f <- factor(6:10)
-f
+(f <- factor(6:10))
 
 f |>
   as.character() |>  #<<
   as.numeric()
 
-# Same as:
-# as.numeric(as.character(f))
+# Same as: as.numeric(as.character(f))
 
 # Recommended in R's documentation
 # See ?factor
